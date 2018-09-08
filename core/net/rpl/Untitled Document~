@@ -1,0 +1,174 @@
+/*Do this Evaluation for all the 27 rules in the table*/
+			int index = 0;
+                        if (mf_ave_rssi.connected  && mf_etx.small && mf_hpc.near)
+                         {
+                             fuzzy_quality_mf[index] = min(mf_ave_rssi.connected,mf_etx.small,mf_hpc.near);
+                             index++;
+                             if(fuzzy_quality_mf[1])
+                             {
+                                peak_value_ouput_mf[0] = 20;
+                             }
+                             else
+                             {
+                                peak_value_output_mf[0] = 0;
+                             }
+
+                            }
+
+                        else {
+                             mf_output_quality.best_reliability = 0;
+                             }
+                         
+                        if (mf_ave_rssi.connected && mf_etx.small && mf_hpc.far)
+                         {
+                           fuzzy_quality_mf[index] = min(mf_ave_rssi.connected,mf_etx.small,mf_hpc.far); 
+                           peak_value_ouput_mf[index] = 20;
+			   index++;
+			   
+                       /* else {
+               	              fuzzy_quality_mf[0] = 0;
+                             }*/
+                         }
+                        if (mf_ave_rssi.connected && mf_etx.small && mf_hpc.very_far)
+                         {
+                            mf_output_quality.best_reliability = min(mf_ave_rssi.connected,mf_etx.small,mf_hpc.very_far);
+                            fuzzy_quality_mf[3] = mf_output_quality.best_reliability;
+                            peak_value_ouput_mf[0] = 20;
+                        else {
+                             mf_output_quality.best_reliability = 0;
+                             }
+                         }
+                        if (mf_ave_rssi.connected && mf_etx.average && mf_hpc.near)
+                         {
+                            mf_output_quality.best_reliability = min(mf_ave_rssi.connected,mf_etx.average,mf_hpc.near);
+                            fuzzy_quality_mf[4] = mf_output_quality.best_reliability;
+                         }
+                        if (mf_ave_rssi.connected && mf_etx.average && mf_hpc.far)
+                         {
+                            mf_output_quality.best_reliability = min(mf_ave_rssi.connected,mf_etx.average,mf_hpc.far);
+                            fuzzy_quality_mf[5] = mf_output_quality.best_reliability;
+                         }
+                        if (mf_ave_rssi.connected && mf_etx.average && mf_hpc.very_far)
+                         {
+                            mf_output_quality.best_reliability = min(mf_ave_rssi.connected,mf_etx.average,mf_hpc.very_far);
+                            fuzzy_quality_mf[6] = mf_output_quality.best_reliability;
+                         }  
+                        if (mf_ave_rssi.connected && mf_etx.large && mf_hpc.near)
+                         {
+                            mf_output_quality.better_reliability = min(mf_ave_rssi.connected,mf_etx.large,mf_hpc.near);
+                            fuzzy_quality_mf[7] = mf_output_quality.better_reliability;
+                         }
+                        if (mf_ave_rssi.trans  && mf_etx.small && mf_hpc.near)
+                         {
+                            mf_output_quality.better_reliability = min(mf_ave_rssi.trans,mf_etx.small,mf_hpc.near);
+                            fuzzy_quality_mf[8] = mf_output_quality.better_reliability; 
+                         }
+                        if (mf_ave_rssi.connected && mf_etx.large && mf_hpc.far)
+                         {
+                            mf_output_quality.better_reliability = min(mf_ave_rssi.connected,mf_etx.large,mf_hpc.far);
+                            fuzzy_quality_mf[9] = mf_output_quality.better_reliability;
+                         }
+                        if (mf_ave_rssi.trans && mf_etx.small && mf_hpc.far)
+                         {
+                            mf_output_quality.better_reliability = min(mf_ave_rssi.trans,mf_etx.small,mf_hpc.far);
+                            fuzzy_quality_mf[10] = mf_output_quality.better_reliability;
+                         }
+                        if (mf_ave_rssi.connected && mf_etx.large && mf_hpc.very_far)
+                         {
+                            mf_output_quality.better_reliability = min(mf_ave_rssi.connected,mf_etx.large,mf_hpc.very_far);
+                            fuzzy_quality_mf[11] = mf_output_quality.better_reliability;
+                         }
+                        if (mf_ave_rssi.trans && mf_etx.small && mf_hpc.very_far)
+                         {
+                            mf_output_quality.better_reliability = min(mf_ave_rssi.trans,mf_etx.small,mf_hpc.very_far);
+                            fuzzy_quality_mf[12] = mf_output_quality.better_reliability;
+                         }
+                        if (mf_ave_rssi.trans && mf_etx.average && mf_hpc.near)
+                         {
+                            mf_output_quality.good_reliability = min(mf_ave_rssi.trans,mf_etx.average,mf_hpc.near);
+                            fuzzy_quality_mf[13] = mf_output_quality.good_reliability;
+                         }  
+                        if (mf_ave_rssi.trans && mf_etx.average && mf_hpc.far)
+                         {
+                            mf_output_quality.good_reliability = min(mf_ave_rssi.trans,mf_etx.average,mf_hpc.near);
+                            fuzzy_quality_mf[14] = mf_output_quality.good_reliability;
+                         }
+                        if (mf_ave_rssi.trans && mf_etx.average && mf_hpc.very_far)
+                         {
+                            mf_output_quality.good_reliability = min(mf_ave_rssi.trans,mf_etx.average,mf_hpc.very_far);
+                            fuzzy_quality_mf[15] = mf_output_quality.good_reliability;
+                         }
+                        if (mf_ave_rssi.trans && mf_etx.large && mf_hpc.near)
+                         {
+                            mf_output_quality.good_reliability = min(mf_ave_rssi.connected,mf_etx.large,mf_hpc.near);
+                            fuzzy_quality_mf[16] = mf_output_quality.good_reliability;
+                         }
+                        if (mf_ave_rssi.disc && mf_etx.small && mf_hpc.near)
+                         {
+                            mf_output_quality.bad_reliability = min(mf_ave_rssi.disc,mf_etx.small,mf_hpc.near);
+                            fuzzy_quality_mf[17] = mf_output_quality.bad_reliability;
+                         }
+                        if (mf_ave_rssi.trans && mf_etx.large && mf_hpc.far)
+                         {
+                            mf_output_quality.bad_reliability = min(mf_ave_rssi.trans,mf_etx.large,mf_hpc.far);
+                            fuzzy_quality_mf[18] = mf_output_quality.bad_reliability;
+                         }
+                        if (mf_ave_rssi.disc && mf_etx.small && mf_hpc.far)
+                         {
+                            mf_output_quality.bad_reliability = min(mf_ave_rssi.disc,mf_etx.small,mf_hpc.far);
+                            fuzzy_quality_mf[18] = mf_output_quality.bad_reliability;
+                         }
+                        if (mf_ave_rssi.trans && mf_etx.large && mf_hpc.very_far)
+                         {
+                            mf_output_quality.bad_reliability = min(mf_ave_rssi.connected,mf_etx.large,mf_hpc.very_far);
+                            fuzzy_quality_mf[19] = mf_output_quality.bad_reliability;
+                         }  
+                        if (mf_ave_rssi.disc && mf_etx.small && mf_hpc.very_far)
+                         {
+                            mf_output_quality.bad_reliability = min(mf_ave_rssi.connected,mf_etx.small,mf_hpc.very_far);
+                            fuzzy_quality_mf[20] = mf_output_quality.bad_reliability;
+                         }
+                        if (mf_ave_rssi.disc && mf_etx.average && mf_hpc.near)
+                         {
+                            mf_output_quality.bad_reliability = min(mf_ave_rssi.disc,mf_etx.average,mf_hpc.near);
+                            fuzzy_quality_mf[21] = mf_output_quality.bad_reliability;
+                         }
+                        if (mf_ave_rssi.disc && mf_etx.average && mf_hpc.far)
+                         {
+                            mf_output_quality.bad_reliability = min(mf_ave_rssi.disc,mf_etx.average,mf_hpc.far);
+                            fuzzy_quality_mf[22] = mf_output_quality.bad_reliability;
+                         }
+                        if (mf_ave_rssi.disc && mf_etx.average && mf_hpc.very_far)
+                         {
+                            mf_output_quality.bad_reliability = min(mf_ave_rssi.disc,mf_etx.average,mf_hpc.very_far);
+                            fuzzy_quality_mf[23] = mf_output_quality.bad_reliability;
+                         }
+                        if (mf_ave_rssi.disc && mf_etx.large && mf_hpc.near)
+                         {
+                            mf_output_quality.bad_reliability = min(mf_ave_rssi.disc,mf_etx.large,mf_hpc.near);
+                            fuzzy_quality_mf[24] = mf_output_quality.bad_reliability;
+                         }  
+                        if (mf_ave_rssi.disc && mf_etx.large && mf_hpc.very_far)
+                         {
+                            mf_output_quality.bad_reliability = min(mf_ave_rssi.disc,mf_etx.large,mf_hpc.far);
+                            fuzzy_quality_mf[25] = mf_output_quality.bad_reliability;
+                         }
+                        if (mf_ave_rssi.disc && mf_etx.large && mf_hpc.very_far)
+                         {
+                            mf_output_quality.bad_reliability = min(mf_ave_rssi.disc,mf_etx.large,mf_hpc.very_far);
+                            fuzzy_quality_mf[26] = mf_output_quality.bad_reliability;
+                         }                                               
+			}
+			/* Schedule DIO response according to the priority assigned to the DIO */
+			new_dio_interval(process_instance, NULL, 2, priority);  //                                      
+			true_rssi_average = 0;
+                        fuzzy_output = 0;
+		} else {
+			PRINTF("Ignoring DIO request. Average = %d\n", true_rssi_average);
+			true_rssi_average = 0;
+		}
+		}
+	}
+		break;
+	}
+}

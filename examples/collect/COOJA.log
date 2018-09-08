@@ -1,0 +1,10 @@
+[09:07:29 - main] [GUI.java:1343] [INFO] - > Starting Cooja
+[09:07:29 - main] [GUI.java:2826] [INFO] - External tools default settings: /external_tools_linux.config
+[09:07:29 - main] [GUI.java:2856] [INFO] - External tools user settings: /home/user/.cooja.user.properties
+[09:07:30 - main] [GUI.java:1349] [INFO] - > Creating simulation
+[09:07:36 - AWT-EventQueue-0] [Simulation.java:423] [INFO] - Simulation random seed: 123456
+[09:07:37 - main] [GUI.java:1359] [INFO] - > Creating mote type
+[09:07:37 - main] [AbstractCompileDialog.java:588] [WARN] - Could not find Contiki source: /home/user/contiki/examples/collect/collect-view-shell.upload.c
+[09:08:18 - AWT-EventQueue-0] [CompileContiki.java:131] [INFO] - > make clean TARGET=cooja 
+[09:08:19 - AWT-EventQueue-0] [CompileContiki.java:131] [INFO] - > make collect-view-shell.cooja TARGET=cooja 
+[09:08:52 - main] [GUI.java:1367] [FATAL] - Mote type initialization failed, aborting quickstart

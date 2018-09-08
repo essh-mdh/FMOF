@@ -1,0 +1,30 @@
+[06:16:20 - main] [GUI.java:3139] [WARN] - JAVA_HOME environment variable not set, Cooja motes may not compile
+[06:16:21 - AWT-EventQueue-0] [GUI.java:2826] [INFO] - External tools default settings: /external_tools_linux.config
+[06:16:21 - AWT-EventQueue-0] [GUI.java:2856] [INFO] - External tools user settings: /root/.cooja.user.properties
+[06:26:58 - AWT-EventQueue-0] [Simulation.java:423] [INFO] - Simulation random seed: 123456
+[10:45:50 - AWT-EventQueue-0] [CompileContiki.java:131] [INFO] - > make udp-client.sky TARGET=sky 
+[10:46:08 - AWT-EventQueue-0] [CompileContiki.java:131] [INFO] - > make clean TARGET=sky 
+[10:46:10 - AWT-EventQueue-0] [CompileContiki.java:131] [INFO] - > make udp-client.sky TARGET=sky 
+[10:51:03 - AWT-EventQueue-0] [CompileContiki.java:131] [INFO] - > make udp-client.sky TARGET=sky 
+[10:51:05 - AWT-EventQueue-0] [CompileContiki.java:131] [INFO] - > make clean TARGET=sky 
+[11:24:30 - AWT-EventQueue-0] [MspMote.java:217] [INFO] - Loading firmware from: /home/user/contiki/examples/FMOF-smart-HOP/rpl-udp-client/udp-client.sky
+[11:24:44 - AWT-EventQueue-0] [Mobility.java:81] [INFO] - Mobility plugin started at (ms): 0
+[11:25:37 - AWT-EventQueue-0] [CompileContiki.java:131] [INFO] - > make clean TARGET=sky 
+[11:25:38 - AWT-EventQueue-0] [CompileContiki.java:131] [INFO] - > make udp-forwarder.sky TARGET=sky 
+[11:26:06 - AWT-EventQueue-0] [MspMote.java:217] [INFO] - Loading firmware from: /home/user/contiki/examples/FMOF-smart-HOP/rpl-udp-forwarder/udp-forwarder.sky
+[11:26:06 - AWT-EventQueue-0] [MspMote.java:217] [INFO] - Loading firmware from: /home/user/contiki/examples/FMOF-smart-HOP/rpl-udp-forwarder/udp-forwarder.sky
+[11:26:06 - AWT-EventQueue-0] [MspMote.java:217] [INFO] - Loading firmware from: /home/user/contiki/examples/FMOF-smart-HOP/rpl-udp-forwarder/udp-forwarder.sky
+[11:26:06 - AWT-EventQueue-0] [MspMote.java:217] [INFO] - Loading firmware from: /home/user/contiki/examples/FMOF-smart-HOP/rpl-udp-forwarder/udp-forwarder.sky
+[11:26:06 - AWT-EventQueue-0] [MspMote.java:217] [INFO] - Loading firmware from: /home/user/contiki/examples/FMOF-smart-HOP/rpl-udp-forwarder/udp-forwarder.sky
+[11:26:06 - AWT-EventQueue-0] [MspMote.java:217] [INFO] - Loading firmware from: /home/user/contiki/examples/FMOF-smart-HOP/rpl-udp-forwarder/udp-forwarder.sky
+[11:26:06 - AWT-EventQueue-0] [MspMote.java:217] [INFO] - Loading firmware from: /home/user/contiki/examples/FMOF-smart-HOP/rpl-udp-forwarder/udp-forwarder.sky
+[11:26:06 - AWT-EventQueue-0] [MspMote.java:217] [INFO] - Loading firmware from: /home/user/contiki/examples/FMOF-smart-HOP/rpl-udp-forwarder/udp-forwarder.sky
+[11:26:06 - AWT-EventQueue-0] [MspMote.java:217] [INFO] - Loading firmware from: /home/user/contiki/examples/FMOF-smart-HOP/rpl-udp-forwarder/udp-forwarder.sky
+[11:26:36 - AWT-EventQueue-0] [CompileContiki.java:131] [INFO] - > make clean TARGET=sky 
+[11:26:38 - AWT-EventQueue-0] [CompileContiki.java:131] [INFO] - > make udp-server.sky TARGET=sky 
+[11:27:00 - AWT-EventQueue-0] [MspMote.java:217] [INFO] - Loading firmware from: /home/user/contiki/examples/FMOF-smart-HOP/rpl-udp-server/udp-server.sky
+[11:33:10 - AWT-EventQueue-0] [Mobility.java:81] [INFO] - Mobility plugin started at (ms): 0
+[11:36:28 - AWT-EventQueue-0] [Mobility.java:113] [INFO] - Parsing position file: /home/user/contiki/examples/FMOF-smart-HOP/1m.s.pos
+[11:36:28 - AWT-EventQueue-0] [Mobility.java:138] [INFO] - Loaded 684 positions
+[11:36:37 - Thread-0] [Simulation.java:252] [INFO] - Simulation main loop started, system time: 1504517797744
+[11:44:02 - Thread-0] [Simulation.java:311] [INFO] - Simulation main loop stopped, system time: 1504518242053	Duration: 444309 ms	Simulated time 1641339 ms	Ratio 3.694138538719675

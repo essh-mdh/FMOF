@@ -1,0 +1,36 @@
+#ifndef RPL_FMOF_H
+#define RPL_FMOF_H
+
+
+
+
+
+/*membership function(fuzzy sets) for the all inputs and output*/
+typedef struct mf_ave_rssi{
+ float connected;
+ float disc;
+ float trans;
+}mf_ave_rssi;
+
+typedef struct mf_etx{
+ float  small;
+ float  average;
+ float  large;
+}mf_etx;
+
+typedef struct mf_hpc{
+ float  near;
+ float  far;
+ float  very_far;
+}mf_hpc;
+
+typedef struct mf_output_quality{
+ float  best_reliablity;
+ float  better_reliability;
+ float  good_reliability;
+ float  bad_reliability;
+}mf_output_quality;
+
+
+
+#endif /* RPL_FMOF_H */

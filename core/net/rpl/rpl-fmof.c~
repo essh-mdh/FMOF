@@ -1,0 +1,225 @@
+
+#include "net/tcpip.h"
+#include "net/uip.h"
+#include "net/uip-ds6.h"
+#include "net/uip-nd6.h"
+#include "net/uip-icmp6.h"
+#include "net/rpl/rpl-private.h"
+#include "net/packetbuf.h"
+
+#define DEBUG DEBUG_NONE
+#include "net/uip-debug.h"
+
+#include <limits.h>
+#include <string.h>
+
+float dom_connected(uint8_t *rssi_average)
+
+static uint8_t fuzzy_values[3];
+
+
+/*Fuzzification functions for the 3 inputs.It takes input parameters*/
+void fuzzification_rssi()
+{
+mf_ave_rssi connected =  dom_connected(rssi_value);
+mf_ave_rssi trans	=  dom_trans(rssi_value);
+mf_ave_rssi disc = dom_disc(rssi_value);
+}
+void fuzzification_etx()
+{
+mf_etx.small =  dom_small(dio.mc.obj.etx);
+mf_etx.ave = dom_ave(dio.mc.obj.etx);
+mf_etx.large = dom_large(dio.mc.obj.etx);
+}
+void fuzzification_hop_count()
+{
+mf_hpc.near =  dom_near(dio.rank);
+mf_hpc.far = dom_far(dio.rank);
+mf_hpc.very_far = dom_very_far(dio.rank);
+}
+
+float dom_connected(uint8_t *rssi_average)
+{
+       
+	if(rssi_average >= -75)
+	{
+		return 1;
+	}
+	else if(rssi_average > -75 && rssi_average > -80)
+	{ 
+		return (rssi_average + 80) / (-75 + 80);
+	}
+	else if(rssi_average <= -80)
+	{
+		return 0;
+	}
+      
+}
+
+float dom_trans(uint8_t *rssi_average)
+{
+        
+	if(rssi_average >= -75)
+	{
+		return 0;
+	}
+	else if(rssi_average > -75 && rssi_average < -80)
+	{ 
+		return (rssi_average + 80) / (-75 + 80);
+	}
+	else if(rssi_average >= -80 && rssi_average >= -85)
+	{
+		return 1;
+	}
+        else if(rssi_average > -75 && rssi_average < -80)
+	{ 
+		return (rssi_average + -90) / (-85 - (-90));
+	}
+        else if(rssi_average <= -90)
+	{
+		return 0;
+	}
+        return dom;
+}
+
+float dom_disc(uint8_t *rssi_average)
+{
+         
+	if(rssi_average <= -90)
+	{
+		return 1;
+	}
+	else if(rssi_average > -85 && rssi_average > -90)
+	{ 
+		return (rssi_average + 90) / (-85 + 90);
+	}
+	else if(rssi_average >= -85)
+	{
+		return 0;
+	}
+        
+}
+
+float dom_small(unsigned *dio.mc.obj.etx)
+{
+         
+	if(dio.mc.obj.etx <= 10)
+	{
+		return 1;
+	}
+	else if(dio.mc.obj.etx > 10 && dio.mc.obj.etx < 30)
+	{ 
+		return (dio.mc.obj.etx - 30) / (10 -30);
+	}
+	else if(dio.mc.obj.etx >= 30)
+	{
+		return 0;
+	}
+        
+}
+
+float dom_average(unsigned *dio.mc.obj.etx)
+{
+        
+	if(dio.mc.obj.etx <= 10)
+	{
+		return 0;
+	}
+	else if(dio.mc.obj.etx > 10 && dio.mc.obj.etx < 30)
+	{ 
+		return (dio.mc.obj.etx - 10) / (30 - 10);
+	}
+	else if(dio.mc.obj.etx >= 30 && dio.mc.obj.etx <= 60)
+	{
+		return 1;
+	}
+        else if(dio.mc.obj.etx > 60 && dio.mc.obj.etx < 80)
+	{ 
+		dom = (dio.mc.obj.etx -80) / (60 - 80);
+	}
+        else if(dio.mc.obj.etx >= 80)
+	{
+		return 0;
+	}
+        
+}
+
+float dom_large(unsigned *dio.mc.obj.etx)
+{
+        
+	if(dio.mc.obj.etx <= 80)
+	{
+		return 0;
+	}
+	else if(dio.mc.obj.etx > 60 && dio.mc.obj.etx < 80)
+	{ 
+		return (dio.mc.obj.etx - 60) / (80 - 60);
+	}
+	else if(dio.mc.obj.etx >= 80)
+	{
+		return 1;
+	}
+       
+}
+
+float dom_near(unsigned *dio.rank)
+{
+         
+	if(dio.rank/256 <= 2)
+	{
+		return 1;
+	}
+	else if(dio.rank/256 > 2 && dio.rank/256 < 3)
+	{ 
+		return (dio.rank/256 - 3) / (2 - 3);
+	}
+	else if(dio.rank/256 >= 3)
+	{
+		return 0;
+	}
+        
+}
+
+float dom_far(unsigned *dio.rank)
+{
+        
+	if(dio.rank/256 <= 2)
+	{
+		return 0;
+	}
+	else if(dio.rank/256 > 2 && dio.rank/256 < 3)
+	{ 
+		return (dio.rank/256 - 2) / (3 - 2);
+	}
+	else if(dio.rank/256 >= 3 && dio.rank/256 <= 5)
+	{
+		return 1;
+	}
+        else if(dio.rank/256 > 5 && dio.rank/256 < 6)
+	{ 
+		return (dio.rank/256 - 6) / (5 - 6);
+	}
+        else if(dio.rank/256 >= 6)
+	{
+		return 0;
+	}
+        
+}
+
+float dom_very_far(unsigned *dio.rank)
+{
+         
+	if(dio.rank/256 <= 6)
+	{
+		return 0;
+	}
+	else if(dio.rank/256 > 5 && dio.rank/256 < 6)
+	{ 
+		return (dio.rank/256 - 5) / (6 - 5);
+	}
+	else if(dio.rank/256 >= 6)
+	{
+		return 1;
+	}
+        
+}

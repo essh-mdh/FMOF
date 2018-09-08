@@ -1,0 +1,392 @@
+/**
+ * \addtogroup uip6
+ * @{
+ */
+/*
+ * Copyright (c) 2010, Swedish Institute of Computer Science.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of the Institute nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE INSTITUTE AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE INSTITUTE OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ * This file is part of the Contiki operating system.
+ *
+ */
+/* Implementation of fuzzy logic mobility objective function(fmof)*/
+
+#include "net/rpl/rpl-private.h"
+#include "net/nbr-table.h"
+#include "net/rpl/rpl.h"
+#include "net/tcpip.h"
+
+#define DEBUG DEBUG_PRINT
+#include "net/uip-debug.h"
+
+#define NO_DATA_PERIOD (CLOCK_SECOND*9/2)
+
+static struct ctimer no_data_timer;
+static int timer_started;
+static int bad_etx_flag;
+
+static void reset(rpl_dag_t *);
+static void neighbor_link_callback(rpl_parent_t *, int, int);
+static rpl_parent_t *best_parent(rpl_parent_t *, rpl_parent_t *);
+static rpl_dag_t *best_dag(rpl_dag_t *, rpl_dag_t *);
+static rpl_rank_t calculate_rank(rpl_parent_t *, rpl_rank_t);
+static void update_metric_container(rpl_instance_t *);
+
+static uint8_t fuzzy_values[2];
+
+
+static uint8_t rssi_average;
+
+
+/*structure of membership function(fuzzy sets)*/
+struct ave_rssi_fuzzy_sets{
+ unsigned int connected;
+ unsigned int disc;
+ unsigned int trans;
+}
+
+struct etx_fuzzy_sets{
+ unsigned int small;
+ unsigned int average;
+ unsigned int large;
+}
+
+struct hpc_fuzzy_sets{
+ unsigned int near;
+ unsigned int far;
+ unsigned int very_far;
+}
+/*Fuzzification functions for the 3 inputs.It takes input parame*/
+void fuzzification_rssi(static int rssi_average)
+{
+
+connected =  connected(rssi_average);
+trans	=  trans(rssi_average);
+disc = disc(rssi_average);
+
+}
+
+void fuzzification_etx(unsigned int dio.mc.obj.etx)
+{
+
+small =  small(dio.mc.obj.etx);
+ave = ave(dio.mc.obj.etx);
+large	= large(dio.mc.obj.etx);
+}
+void fuzzification_hop_count(unsigned int dio.rank/256)
+{
+
+near =  near(dio.rank/256);
+far = far(dio.rank/256);
+very_far = very_far(dio.rank/256);
+}
+
+int connected(static int rssi_average)
+{
+        //dom 
+	if(rssi_average >= -75)
+	{
+		return 1;
+	}
+	if(rssi_average > -75 && rssi_average > -80)
+	{ 
+		return (rssi_average + 80) / (-75 + 80);
+	}
+	if(rssi_average <= -80)
+	{
+		return 0;
+	}
+}
+
+int trans(static int rssi_average)
+{
+	if(rssi_average >= -75)
+	{
+		return 0;
+	}
+	if(rssi_average > -75 && rssi_average < -80)
+	{ 
+		return (rssi_average + 80) / (-75 + 80);
+	}
+	if(rssi_average >= -80 && rssi_average >= -85)
+	{
+		return 1;
+	}
+        if(rssi_average > -75 && rssi_average < -80)
+	{ 
+		return (rssi_average + -90) / (-85 - (-90));
+	}
+        if(rssi_average <= -90)
+	{
+		return 0;
+	}
+}
+
+int disconnected(static int rssi_average)
+{
+        //dom 
+	if(rssi_average <= -90)
+	{
+		return 1;
+	}
+	if(rssi_average > -85 && rssi_average > -90)
+	{ 
+		return (rssi_average + 90) / (-85 + 90);
+	}
+	if(rssi_average >= -85)
+	{
+		return 0;
+	}
+}
+
+int small(unsigned int dio.mc.obj.etx)
+{
+        //dom 
+	if(dio.mc.obj.etx <= 10)
+	{
+		return 1;
+	}
+	if(dio.mc.obj.etx > 10 && dio.mc.obj.etx < 30)
+	{ 
+		return (dio.mc.obj.etx - 30) / (10 -30);
+	}
+	if(dio.mc.obj.etx >= 30)
+	{
+		return 0;
+	}
+}
+
+int average(unsigned int dio.mc.obj.etx)
+{
+	if(dio.mc.obj.etx <= 10)
+	{
+		return 0;
+	}
+	if(dio.mc.obj.etx > 10 && dio.mc.obj.etx < 30)
+	{ 
+		return (dio.mc.obj.etx - 10) / (30 - 10);
+	}
+	if(dio.mc.obj.etx >= 30 && dio.mc.obj.etx <= 60)
+	{
+		return 1;
+	}
+        if(dio.mc.obj.etx > 60 && dio.mc.obj.etx < 80)
+	{ 
+		return (dio.mc.obj.etx -80) / (60 - 80);
+	}
+        if(dio.mc.obj.etx >= 80)
+	{
+		return 0;
+	}
+}
+
+int large(unsigned int dio.mc.obj.etx)
+{
+        //dom 
+	if(dio.mc.obj.etx <= 80)
+	{
+		return 0;
+	}
+	if(dio.mc.obj.etx > 60 && dio.mc.obj.etx < 80)
+	{ 
+		return (dio.mc.obj.etx - 60) / (80 - 60);
+	}
+	if(dio.mc.obj.etx >= 80)
+	{
+		return 1;
+	}
+}
+
+int near(unsigned int dio.rank/256)
+{
+        //dom 
+	if(dio.rank/256 <= 2)
+	{
+		return 1;
+	}
+	if(dio.rank/256 > 2 && dio.rank/256 < 3)
+	{ 
+		return (dio.rank/256 - 3) / (2 - 3);
+	}
+	if(dio.rank/256 >= 3)
+	{
+		return 0;
+	}
+}
+
+int far(unsigned int dio.rank/256)
+{
+	if(dio.rank/256 <= 2)
+	{
+		return 0;
+	}
+	if(dio.rank/256 > 2 && dio.rank/256 < 3)
+	{ 
+		return (dio.rank/256 - 2) / (3 - 2);
+	}
+	if(dio.rank/256 >= 3 && dio.rank/256 <= 5)
+	{
+		return 1;
+	}
+        if(dio.rank/256 > 5 && dio.rank/256 < 6)
+	{ 
+		return (dio.rank/256 - 6) / (5 - 6);
+	}
+        if(dio.rank/256 >= 6)
+	{
+		return 0;
+	}
+}
+
+int very_far(unsigned int dio.rank/256)
+{
+        //dom 
+	if(dio.rank/256 <= 6)
+	{
+		return 0;
+	}
+	if(dio.rank/256 > 5 && dio.rank/256 < 6)
+	{ 
+		return (dio.rank/256 - 5) / (6 - 5);
+	}
+	if(dio.rank/256 >= 6)
+	{
+		return 1;
+	}
+}
+
+rpl_of_t rpl_fmof = {
+  reset,
+  neighbor_link_callback,
+  fuzzification,
+  rule evluation,
+  defuzzification,
+  best_parent,
+  best_dag,
+  calculate_rank,
+  update_metric_container,
+  1
+};
+
+
+main()
+{
+ initialize_system();
+ while(1){
+  get_system_inputs();
+  fuzzification();
+  rule_evaluation();
+  defuzzification();
+  put_system_outputs();
+  }
+}
+
+
+
+
+
+
+/*  Each rule has an if side and a then side. Elements making up if side are
+pointers to antecedent values inside mf_type structure. Elements making up then
+side of rule are pointers to output strength values, also inside mf_type
+structure. Each rule structure contains a pointer to next rule in rule base. */
+struct rule_element_type{
+  int *value;                                           /* pointer to antecedent/output strength value */
+  struct rule_element_type *next;                       /* next antecedent/output element in rule */
+  };
+struct rule_type{
+  struct rule_element_type *if_side;                     /* list of antecedents in rule */
+  struct rule_element_type *then_side;                   /* list of outputs in rule     */
+  struct rule_type *next;                                /* next rule in rule base      */
+  };
+struct rule_type *Rule_Base;                             /* list of all rules in rule base */
+
+
+
+/* Fuzzification--Degree of membership value is calculated for each membership
+function of each system input. Values correspond to antecedents in rules. */
+fuzzification()
+{
+ struct io_type *si;                                     /* system input pointer        */
+ struct mf_type *mf;                                      /* membership function pointer */
+for(si=System_Inputs; si != NULL; si=si->next)
+  for(mf=si->membership_functions; mf != NULL; mf=mf->next)
+    compute_degree_of_membership(mf,si->value);
+}
+
+
+
+/* Rule Evaluation--Each rule consists of a list of pointers to antecedents
+(if side), list of pointers to outputs (then side), and pointer to next rule
+in rule base. When a rule is evaluated, its antecedents are ANDed together,
+using a minimum function, to form strength of rule. Then strength is applied
+to each of listed rule outputs. If an output has already been assigned a rule
+strength, during current inference pass, a maximum function is used to
+determine which strength should apply. */
+rule_evaluation()
+{
+ struct rule_type *rule;
+ struct rule_element_type *ip;       /* pointer of antecedents  (if-parts)   */
+ struct rule_element_type *tp;       /* pointer to consequences (then-parts) */
+ int strength;                /* strength of  rule currently being evaluated */
+ for(rule=Rule_Base; rule != NULL; rule=rule->next){
+  strength = UPPER_LIMIT;                       /* max rule strength allowed */
+        /* process if-side of rule to determine strength */
+  for(ip=rule->if_side; ip != NULL; ip=ip->next)
+      strength = min(strength,*(ip->value));
+       /* process then-side of rule to apply strength */
+  for(tp=rule->then_side; tp != NULL; tp=tp->next)
+      *(tp->value) = max(strength,*(tp->value));
+  }
+}
+
+
+/* Defuzzification */
+defuzzification()
+{
+ struct io_type *so;    /* system output pointer                  */
+ struct mf_type *mf;    /* output membership function pointer     */
+ int sum_of_products;   /* sum of products of area & centroid */
+ int sum_of_areas;     /* sum of shortend trapezoid area          */
+ int area;
+ int centroid;
+ /* compute a defuzzified value for each system output */
+for(so=System_Outputs; so != NULL; so=so->next){
+  sum_of_products = 0;
+  sum_of_areas = 0;
+  for(mf=so->membership_functions; mf != NULL; mf=mf->next){
+     area = compute_area_of_trapezoid(mf);
+     centroid = mf->point1 + (mf->point2 - mf->point1)/2;
+     sum_of_products += area * centroid;
+     sum_of_areas += area;
+     }
+  so->value = sum_of_products/sum_of_areas;   /* weighted average */
+  }
+}
+
+
+
